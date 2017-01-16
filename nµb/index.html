@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+  <head>
+    <title>nµb #055</title>
+    <style>
+      body {
+        background: #057;
+        padding: 10px;
+      }
+
+	    .brand {
+        font-size: 240pt;
+	    }
+
+      .line {
+        font-size: 36pt;
+        font-family: monospace;
+        line-height: 48px;
+        margin-left: 36px;
+      }
+
+      .led {
+         font-size: 100px;
+         margin-right: 40px;
+         height: 64px;
+         flex: 1;
+      }
+
+      .led_row {
+        display: flex;
+        margin: 20px;
+        margin-left: 40px;
+      }
+
+      #container {
+        display: flex;
+        width: 100%;
+      }
+
+	    #nub {
+        background: #555;
+        width: 480px;
+	    }
+
+      #editor {
+        flex: 1;
+        height: 800px;
+        font-family: monospace;
+        padding-left: 10px;
+      }
+
+      #code {
+        width: 100%;
+        height: 800px;
+      }
+
+      #push {
+          font-size: 160pt;
+          margin-left: 120px;
+      }
+    </style>
+    <script>
+      var initTime = new Date();
+      var red = 0;
+      var green = 0;
+      var blue = 0;
+      var rampValue = 0;
+      var fadeValue = 0;
+      var changeValue = 0;
+      var int2hex = ["0", "1", "2"];
+
+      function init() {
+        var b;
+        var colors = ["red", "lime", "blue", "white",
+                      "cyan", "magenta", "yellow", "black"];
+        for (var i = 0; i < 8; i++) {
+          b = document.getElementById("b" + i.toString());
+          b.style.background = colors[i];
+        }
+
+        showTime()
+
+        colorRamp()
+        colorFade()
+        colorChange()
+        colorCombine()
+      }
+
+      function colorCombine() {
+        var t = setTimeout(colorCombine, 50);
+        var led = document.getElementById("b3");
+
+        led.style.background = "rgb(" + (red % 255).toString() + ", " + green.toString() + ", " + blue.toString() + ")";
+      }
+
+      function colorRamp() {
+        var t = setTimeout(colorRamp, 50);
+        var led = document.getElementById("b0");
+
+        red = rampValue;
+        if (red > 255) {
+          red = 255 - (red - 255);
+        }
+
+        led.style.background = "rgb(" + red.toString() + ", 0, 0)";
+        rampValue += 10;
+        if (rampValue > 512)
+          rampValue = 0;
+      }
+
+      function colorFade() {
+        var now = new Date();
+        var t = setTimeout(colorFade, 50);
+        var led = document.getElementById("b1");
+
+        // Math.sin((now.getMilliseconds() / 1000.0 - 0.5) * Math.PI * 2);
+        green = (Math.sin(fadeValue * Math.PI * 2) + 1) * 256;
+        green = Math.floor(green);
+        fadeValue += 0.01;
+        if (fadeValue > 0.5)
+          fadeValue = -0.5;
+        led.style.background = "rgb(0, " + green.toString() + ", 0)";
+      }
+
+      function colorChange() {
+        var now = new Date();
+        var t = setTimeout(colorChange, 50);
+        var led = document.getElementById("b2");
+
+        // Math.sin((now.getMilliseconds() / 1000.0 - 0.5) * Math.PI * 2);
+        blue = (Math.sin(changeValue * Math.PI * 2) + 1);
+        blue *= (Math.cos(changeValue * Math.PI * 2) + 1);
+        // color = Math.sin(color+blue * Math.PI * 2) * 127 + 127;
+        blue = Math.sin(blue) * 256;
+        blue = Math.floor(blue);
+
+        changeValue += 0.01;
+        if (changeValue > 0.5)
+          changeValue = -0.5;
+        led.style.background = "rgb(0, 0, " + blue.toString() + ")";
+      }
+
+      function tick() {
+        var clock = document.getElementById("a2");
+        var elapsed = Math.round(((new Date()) - initTime) / 1000);
+        var h = Math.floor(elapsed / 60 / 60);
+        var m = checkTime(Math.floor(elapsed / 60) % 60);
+        var s = checkTime(elapsed % 60);
+        var t = setTimeout(tick, 1000);
+        clock.innerHTML = h.toString() + ":" + m.toString() + ":" + s.toString();
+      }
+
+      function showTime() {
+        var clock = document.getElementById("a0");
+        var now = new Date();
+        var h = checkTime(now.getHours());
+        var m = checkTime(now.getMinutes());
+        var s = checkTime(now.getSeconds());
+        var t = setTimeout(showTime, 1000);
+        clock.innerHTML = "눕 " + h.toString() + ":" + m.toString() + ":" + s.toString() + " 㛃";
+      }
+
+      function checkTime(i) {
+        if (i < 10) {i = "0" + i};
+        return i;
+      }
+    </script>
+  </head>
+  <body onload="javascript:init();">
+    <h1>Index of /nµb</h1>
+    <div id="container">
+      <div id="nub">
+        <br/>
+        <div class="led_row">
+          <div id="b0" class="led"></div>
+          <div id="b1" class="led"></div>
+      		<div id="b2" class="led"></div>
+      		<div id="b3" class="led"></div>
+        </div>
+        <br/>
+        <div class="led_row">
+          <div id="b4" class="led"></div>
+          <div id="b5" class="led"></div>
+      		<div id="b6" class="led"></div>
+      		<div id="b7" class="led"></div>
+        </div>
+        <br/><br/>
+        <span id="a0" class="line">&nbsp;</span><br/>
+        <span id="a1" class="line">&nbsp;</span><br/>
+        <span id="a2" class="line">&nbsp;&nbsp;nµb #555</span><br/>
+        <span id="a3" class="line">nubcore.com:80</span><br/>
+        <span id="a4" class="line">&nbsp;</span><br/>
+        <span id="a5" class="line">&nbsp;Menu&nbsp;&nbsp;&nbsp;&nbsp;Time</span>
+        <br/>
+    		<div id="push" class="knob">⚈</div>
+      </div>
+      <div id="editor">
+        <textarea id="code">
+#A0A nubJAR POUPON
+#0A0 adding mqtt button pub
+#AAA fixed mqtt added Encoder (encoder.py)
+#9☉☉ --> jar MUSTARD
+#099 volt meter
+#009 ⁂ lcd
+#600 ⌚ +buzz
+#630 re-write: lcd, encoder
+#060 swap pin 2 to 0
+#066 +temp & backlite
+#666 nub'd
+
+import upcd8544
+import framebuf
+import machine
+import onewire
+import ds18x20
+from encoder import Encoder
+from machine import Pin
+from machine import PWM
+from machine import SPI
+from time import sleep_ms
+from time import ticks_us
+from time import ticks_diff
+from utime import localtime
+
+VERSION = "#666 15:42"
+INTERVAL = 500
+PUSH_PIN = const(0)
+BUZZ_PIN = const(12)
+LCD_RST = const(0)
+LCD_CE = const(16)
+LCD_DC = const(15)
+
+
+push = Pin(PUSH_PIN, Pin.IN)
+buzz = Pin(BUZZ_PIN, Pin.OUT)
+enc = Encoder(5, 4, Pin.PULL_UP, 4, 0, 255)
+ow = onewire.OneWire(Pin(3))
+ds = ds18x20.DS18X20(ow)
+roms = ds.scan()
+
+
+pushed = False
+count = 0
+temp = 0
+
+def timed_function(f, *args, **kwargs):
+	myname = str(f).split(' ')[1]
+	def new_func(*args, **kwargs):
+		t = ticks_us()
+		result = f(*args, **kwargs)
+		delta = ticks_diff(ticks_us(), t)
+		print('Function {} Time = {:6.3f}ms'.format(myname, delta/1000))
+		return result
+	return new_func
+
+#@timed_function
+def ver():
+	print(VERSION)
+
+ver()
+
+def chirp(t = 10):
+    buzz.high()
+    sleep_ms(t)
+    buzz.low()
+
+chirp()
+
+def push_handler(p):
+	global pushed
+	pushed = True
+	print("PUSH")
+
+push.irq(trigger=Pin.IRQ_FALLING, handler=push_handler)
+
+spi = SPI(1, baudrate=80000000, polarity=0, phase=0)
+lcd = upcd8544.PCD8544(spi, Pin(0), Pin(16), Pin(15), Pin(0))
+
+width = 84
+height = 48
+pages = height // 8
+buffer = bytearray(pages * width)
+framebuf = framebuf.FrameBuffer1(buffer, width, height)
+framebuf.text("red/watch", 0, 1, 1)
+framebuf.text(VERSION, 0, 8, 1)
+lcd.data(buffer)
+
+buzz = Pin(12, Pin.OUT)
+
+chirp()
+
+def main():
+	global lcd, temp, framebuf, pushed, count
+	bar = True
+	while 1:
+		t = localtime()
+
+		count = enc.value
+
+		if pushed:
+			pushed = False
+			chirp()
+
+		framebuf.fill(0)
+		framebuf.text("{:d} {:.2f}'C".format(count, temp), 4, 0, 1)
+		framebuf.text(VERSION, 2, 40, 1)
+		framebuf.text(" {:02d}:{:02d}:{:02d}".format(t[3], t[4], t[5]), 0, 16, 1)
+
+		if bar:
+			bar = False
+			for x in range(0,84):
+				framebuf.pixel(x, 32, 1)
+		else:
+			bar = True
+			ds.convert_temp()
+			temp = ds.read_temp(roms[0])
+
+		lcd.data(buffer)
+		sleep_ms(INTERVAL)
+
+main()
+      </textarea>
+      </div>
+    </div>
+    <span class="brand">nµb</span>
+  </body>
+</html>
